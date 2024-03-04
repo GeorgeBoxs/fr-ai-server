@@ -1,0 +1,35 @@
+services:
+  postgres:
+    image: postgres:latest
+    restart: always
+    container_name: ${POSTGRES_CONTAINER_NAME}
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - 32768:5432
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    restart: always
+    container_name: ${PGADMIN_CONTAINER_NAME}
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+      - '8080:80'
+    depends_on:
+      - postgres
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fari_api
+    environment:
+      - PORT=${PORT}
+    ports:
+      - '5000:5000'
+    depends_on:
+      - postgres
+    volumes:
+      - ./app:/app
